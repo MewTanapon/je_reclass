@@ -70,6 +70,35 @@ Then open **http://localhost:5000** in your browser.
 
 Only rows where **Functional Area** is `F620` or `F630` are processed.
 
+## Business workflow
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[User enters\nInput Folder Path]
+    B --> C[User enters\nOutput Folder Path]
+    C --> D[Click Run]
+
+    D --> E[Read Excel workbook\nRetirement_Data sheet]
+    E --> F{Functional Area\n= F620 or F630?}
+    F -- No --> G[Skip row]
+    F -- Yes --> H[Join with\nCost_Center_Master\non Costcenter]
+
+    H --> I[Calculate\nNet Reclass per group]
+
+    I --> J[Generate Group 1 rows\nAccount 7615000\nCostcenter from source]
+    I --> K[Generate Group 2 rows\nAccount 6645000\nCostcenter blank\nCustomer 1000509\nProduct PC_ProfitCenter_Dummy]
+
+    J --> L{Net Reclass}
+    K --> L
+    L -- > 0 --> M[Debit Gr1 / Credit Gr2]
+    L -- < 0 --> N[Credit Gr1 / Debit Gr2]
+
+    M --> O[Combine all JE rows]
+    N --> O
+    O --> P[Write styled Excel output\nJE_filename_YYYYMMDD_HHMMSS.xlsx\nSheet: JE_Output]
+    P --> Q([Done — filename shown on screen])
+```
+
 ## Run tests
 
 ```bash
